@@ -2,7 +2,7 @@
 # @Author: jsgounot
 # @Date:   2023-12-12 10:15:51
 # @Last Modified by:   jsgounot
-# @Last Modified time: 2023-12-12 16:29:35
+# @Last Modified time: 2024-07-03 12:18:15
 
 import concurrent.futures
 import argparse
@@ -57,7 +57,7 @@ def process(args):
             raise Exception(f'Unable to find seqID {bname} in taxonomic file')
 
     print (f'Define genome size and seq numbers. Number of threads: {args.threads}')
-    seqinfos = multi_threads_seqinfos(fnames) if args.threads > 1 else single_thread_seqinfos(fnames)
+    seqinfos = multi_threads_seqinfos(fnames, args.threads) if args.threads > 1 else single_thread_seqinfos(fnames)
 
     print ('Create the output files')
     os.makedirs(args.outdir, exist_ok=True)
@@ -104,9 +104,9 @@ def single_thread_seqinfos(fnames):
 
     return seqinfos
 
-def multi_threads_seqinfos(fnames):
+def multi_threads_seqinfos(fnames, max_workers):
     seqinfos = {}
-    with concurrent.futures.ProcessPoolExecutor(max_workers=args.threads) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
         if USED_TQDM:
             iterator = tqdm.tqdm(executor.map(fasta_info, fnames), total=len(fnames))
         else:
