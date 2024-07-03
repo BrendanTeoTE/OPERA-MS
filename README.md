@@ -44,8 +44,6 @@ perl OPERA-MS.pl install-db
 ```
 The database contains representative genomes for 23k bacterial species from [**GTDB**](https://gtdb.ecogenomic.org/) and requires 35Gb of free disc space. Please be aware that this version has been generated from a very old GTDB release, and GTDB now includes more than 80k bacterial species.
 
-**Note: Databases from previous versions are no longer supported.**
-
 # Usage
 
 ### Essential arguments
@@ -112,6 +110,8 @@ We typically run OPERA-MS with default parameters using 16 threads on an Intel X
 | CAMI2 multi-strain mock community (low complexity)  | 3.9  | 2    | 1.4  | 5.5| 
 | Human gut microbiome (medium complexity) | 24.4  | 1.6  | 2.7  | 10.2| 
 | CAMI2 environmental mock community (high complexity)  | 9.9  | 4.8  | 4.5    | 12.8|
+
+**Important note: Peak RAM usage became mostly dependant of the databasize used by OPERA-MS. Custom databases, including updated GTDB will very likely lead to very high RAM usage.**
 
 OPERA-MS is designed to work with deep short-read sequencing, but can work with lower coverage in terms of long-read sequencing. In practice, short-read coverage >15x is recommended, while OPERA-MS can use long-read coverage as low as 9x to boost assembly contiguity. Based on this, we recommend at least 9Gbp of short-read data and 3Gbp of long-read data to allow for assembly of bacterial genomes at 1% relative abundance in the metagenome.
 
