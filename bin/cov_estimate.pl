@@ -41,6 +41,9 @@ my($contigs_file, %LIB, $samtools_path, $mapping_files, $sigma_contigs_file,
     );
 my $num_LIB = 0;
 
+print "debug_debug $contigs_file done \n";
+print "debug_debug $opera_ms_config_file done \n";
+
 $contigs_file_type = "SOAP";
 print STDERR "\nReading config file: ".$opera_ms_config_file."\n"; 
 open($opera_ms_cf, "<", $opera_ms_config_file); 
