@@ -982,17 +982,16 @@ sub run_skani_on_clusters{
             if ($count == $max_genome_for_sketch) {
                 $count = 0;
                 # Sketch
-                #run_exe("sylph sketch -d $partial_sketch_dir/partial_sketch_$partial_count -r $inter_fa_dir/* -t $nb_process > $skani_dir/sketch_$partial_count.out 2> $skani_dir/sketch_$partial_count.err");
-                run_exe("$opera_ms_dir/bin/run_sylph.sh $inter_fa_dir $partial_sketch_dir $partial_count $nb_process $skani_dir $sylph_ref");
-                #if ($?) {
-                #die "Error in sylph sketch. See $skani_dir/sketch_$partial_count.err for details.\n";
-                #}
+                run_exe("sylph sketch -d $partial_sketch_dir/partial_sketch_$partial_count -r $inter_fa_dir/* -t $nb_process > $skani_dir/sketch_$partial_count.out 2> $skani_dir/sketch_$partial_count.err");
+                if ($?) {
+                die "Error in sylph sketch. See $skani_dir/sketch_$partial_count.err for details.\n";
+                }
 
                 # Query
-                #run_exe("sylph query $sylph_ref $partial_sketch_dir/partial_sketch_$partial_count/*.sylsp -t $nb_process -o $skani_dir/sylph_query_$partial_count.out 2> $skani_dir/sylph_query_$partial_count.err");
-                #if ($?) {
-                #die "Error in sylph query. See $skani_dir/sylph_query_$partial_count.err for details.\n";
-                #}
+                run_exe("sylph query $sylph_ref $partial_sketch_dir/partial_sketch_$partial_count/*.sylsp -t $nb_process -o $skani_dir/sylph_query_$partial_count.out 2> $skani_dir/sylph_query_$partial_count.err");
+                if ($?) {
+                die "Error in sylph query. See $skani_dir/sylph_query_$partial_count.err for details.\n";
+                }
 
                 $partial_count++;
             }
@@ -1020,12 +1019,11 @@ sub run_skani_on_clusters{
 	$count++;
     }
     if($count != 0){
-    #run_exe("sylph sketch -d $partial_sketch_dir/partial_sketch_$partial_count -r $inter_fa_dir/* -t $nb_process > $skani_dir/sketch_$partial_count.out 2> $skani_dir/sketch_$partial_count.err");
-    #run_exe("sylph query $sylph_ref $partial_sketch_dir/partial_sketch_$partial_count/* -o $skani_dir/sylph_query_$partial_count.out -t $nb_process 2> $skani_dir/sylph_query_$partial_count.err");
-    run_exe("$opera_ms_dir/bin/run_sylph.sh $inter_fa_dir $partial_sketch_dir $partial_count $nb_process $skani_dir $sylph_ref");
-    #}
-	#if($?){
-	#    die "Error in during bin/sylph sketch. Please see $skani_dir/sylph_sketch.out $skani_dir/sylph_sketch.err for details.\n";
+    run_exe("sylph sketch -d $partial_sketch_dir/partial_sketch_$partial_count -r $inter_fa_dir/* -t $nb_process > $skani_dir/sketch_$partial_count.out 2> $skani_dir/sketch_$partial_count.err");
+    run_exe("sylph query $sylph_ref $partial_sketch_dir/partial_sketch_$partial_count/* -o $skani_dir/sylph_query_$partial_count.out -t $nb_process 2> $skani_dir/sylph_query_$partial_count.err");
+    }
+	if($?){
+	    die "Error in during bin/sylph sketch. Please see $skani_dir/sylph_sketch.out $skani_dir/sylph_sketch.err for details.\n";
 	}
     run_exe("cat $skani_dir/sylph_query_$partial_count.out > $skani_dir/sylph_query.out");
 
@@ -1081,13 +1079,11 @@ sub run_skani_on_clusters{
     #run_exe("ln -s $skani_ref/markers.bin $skani_dir/skani_small_db");
 
     #run skani sketch
-    #run_exe("skani sketch -l $skani_dir/sample_files.txt -o $skani_sketch_dir -t $nb_process 2> $skani_dir/skani_query.err");
+    run_exe("skani sketch -l $skani_dir/sample_files.txt -o $skani_sketch_dir -t $nb_process 2> $skani_dir/skani_query.err");
 
     #run skani dist
-    #(old)run_exe("skani dist -q $skani_sketch_dir/* -r $skani_ref/* -t 10 > skani_dist.out.tsv")
-    #run_exe("skani dist -q $skani_sketch_dir/* --rl $skani_dir/db_files.txt -t $nb_process > $skani_dir/skani_dist.out.tsv 2> $skani_dir/skani_dist.err")
-
-    run_exe("$opera_ms_dir/bin/run_skani.sh $skani_dir $skani_sketch_dir $nb_process");
+    #run_exe("skani dist -q $skani_sketch_dir/* -r $skani_ref/* -t 10 > skani_dist.out.tsv")
+    run_exe("skani dist -q $skani_sketch_dir/* --rl $skani_dir/db_files.txt -t $nb_process > $skani_dir/skani_dist.out.tsv 2> $skani_dir/skani_dist.err")
 
     #run_exe("rm -r $inter_fa_dir");
 }
