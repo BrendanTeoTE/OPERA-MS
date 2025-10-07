@@ -4,19 +4,18 @@
 set -euo pipefail
 
 INTER_FA_DIR="$1"
-PARTIAL_SKETCH_DIR="$2"
-PARTIAL_COUNT="$3"
-THREADS="$4"
-SKANI_DIR="$5"
-SYLPH_REF="$6"
+SYLPH_SKETCH_DIR="$2"
+THREADS="$3"
+SKANI_DIR="$4"
+SYLPH_REF="$5"
 
-SKETCH_OUT="$SKANI_DIR/sketch_${PARTIAL_COUNT}.out"
-SKETCH_ERR="$SKANI_DIR/sketch_${PARTIAL_COUNT}.err"
-QUERY_OUT="$SKANI_DIR/sylph_query_${PARTIAL_COUNT}.out"
-QUERY_ERR="$SKANI_DIR/sylph_query_${PARTIAL_COUNT}.err"
+SKETCH_OUT="$SKANI_DIR/sylph_sketch.out"
+SKETCH_ERR="$SKANI_DIR/sylph_sketch.err"
+QUERY_OUT="$SKANI_DIR/sylph_query.out"
+QUERY_ERR="$SKANI_DIR/sylph_query.err"
 
 echo "[INFO] Running sylph sketch..."
-sylph sketch -d "$PARTIAL_SKETCH_DIR/partial_sketch_$PARTIAL_COUNT" \
+sylph sketch -d "$SYLPH_SKETCH_DIR/sylph_sketch" \
     -r "$INTER_FA_DIR"/* \
     -t "$THREADS" \
     > "$SKETCH_OUT" 2> "$SKETCH_ERR"
@@ -27,13 +26,16 @@ if [[ $? -ne 0 ]]; then
 fi
 
 echo "[INFO] Running sylph query..."
-sylph query "$SYLPH_REF" "$PARTIAL_SKETCH_DIR/partial_sketch_$PARTIAL_COUNT"/*.sylsp \
+sylph query "$SYLPH_REF" "$SYLPH_SKETCH_DIR/sylph_sketch"/*.sylsp \
     -t "$THREADS" \
+    -m 10 \
     -o "$QUERY_OUT" 2> "$QUERY_ERR"
+
 
 if [[ $? -ne 0 ]]; then
     echo "[ERROR] Sylph query failed. See $QUERY_ERR" >&2
     exit 1
 fi
 
-echo "[INFO] Sylph sketch + query finished for partial count $PARTIAL_COUNT"
+echo "[INFO] Sylph ran successfully."
+

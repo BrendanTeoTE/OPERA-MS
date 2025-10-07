@@ -436,81 +436,75 @@ sub compute_confidance_interval{
 
 }
 
+#fix
 sub compute_mode{
     my ($window_distrib) = @_;
 
-    #$window_distrib = [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10];
-
-    #Resolve weird problem of undefined value NEED TO INVESTIGATE WHY THIS APPENS
+    # Resolve undefineds (keep your warning behavior)
     my $nb_window = @{$window_distrib} + 0;
-    my @temp = ();my $val;
-    for(my $i = 0; $i < $nb_window; $i++){
-	$val = $window_distrib->[$i];
-	if(defined $val){
-	    push(@temp, $val);
-	}
-	else{
-	    print STDERR " *** WARNING undefined value in window_distrib " . $i . "\n";
-	}
+    my @temp = (); my $val;
+    for (my $i = 0; $i < $nb_window; $i++){
+        $val = $window_distrib->[$i];
+        if (defined $val){
+            push(@temp, $val);
+        } else {
+            print STDERR " *** WARNING undefined value in window_distrib $i\n";
+        }
     }
-    
-    
-    #$R->set( 'values', $window_distrib);
-    $R->set( 'values', \@temp);
-    $R->set( 'span', 11);
-    
-    $a = $R->run(
-	## adpated from EDDA
-	#q `print(sessionInfo())`,	
-	q `length(values)`,
-	q `dens <- density(values)`,
-	q `series <-dens$y`,
-	q `z <- embed(series, span)`,
-	q `s <- span%/%2`,
-	q `ind <- apply(z, 1, which.max)`,
-	q `v <- ind == (1 + s)`,
-	q `result <- c(rep(FALSE, s), v)`,
-	q `result <- result[1:(length(result) - s)]`,
-	q `print(dens$x[result])`,
-	);
 
-    @tmp = split(/\s+/, $a);
+    # Lightweight debug summary (same spirit as before)
+    {
+        require List::Util;
+        my $n       = 0 + @temp;
+        my @nums    = @temp; # already filtered defined
+        my ($minv,$maxv) = @nums ? (List::Util::min(@nums), List::Util::max(@nums)) : ('NA','NA');
+        my @preview = @nums > 20 ? @nums[0..19] : @nums;
+        warn sprintf("[compute_mode] temp: n=%d, undef=0, min=%s, max=%s, preview=%s\n",
+                     $n, $minv, $maxv, join(",", @preview));
+    }
 
+    # If nothing to do, mirror original shape and bail early
+    return [] unless @temp;
+
+    # ---- R side (fresh session per call; avoids cross-talk/races) ----
+    my $vals = join(",", @temp);
+    my $span = 11;
+
+    my $R = Statistics::R->new( shared => 0 );
+    $R->startR;
+
+    my $script = <<"RS";
+values <- c($vals)
+span <- $span
+dens <- density(values)
+series <- dens\$y
+z <- embed(series, span)
+s <- span %/% 2
+ind <- apply(z, 1, which.max)
+v <- ind == (1 + s)
+result <- c(rep(FALSE, s), v)
+result <- result[1:(length(result) - s)]
+cat(dens\$x[result], sep=" ")
+RS
+
+    my $a = $R->run($script);
+    $R->stopR;
+
+    $a //= "";
     print STDERR " *** $a\n";
 
+    my @tmp = split(/\s+/, $a);
+
+    # Keep your original guarding against an "[1]" prefix (unlikely now, but harmless)
     my @res;
-    @res = @tmp[1..@tmp-1]; #($tmp[1], $tmp[2]);
-    @res = @tmp[2..@tmp-1] if(index($tmp[1], "[") != -1); #($tmp[2], $tmp[3]) if($tmp[1] eq "[1]");
-    
+    @res = @tmp[1..$#tmp] if @tmp;                   # drop leading empty if any
+    @res = @tmp[2..$#tmp] if @tmp && $tmp[0] =~ /^\[/;
+
+    # If neither branch above fired (normal case), just use @tmp
+    @res = @tmp if !@res && @tmp;
+
     return \@res;
-    
 }
-
-
-
-sub compute_probability{
-    my ( $strain_mean_cov, $dispersion_value, $contig_mean_cov) = @_;
-    $value = int($contig_mean_cov);
-    #
-    $R->set( 'mean', $strain_mean_cov );
-    $R->set( 'dispersion', $dispersion_value);
-    $R->set( 'k', $value);
-    my $out1 = $R->run(
-	q ` s <- dispersion * log(dispersion / (dispersion + mean)) + lgamma(dispersion + k) + k * log(mean / (dispersion + mean)) - lgamma(k + 1) - lgamma(dispersion)`,
-	#  q`a <- $val`,
-	q `print(s)`
-	);
-
-    print $out1 ."\n";
-    
-#return dispersion * log(dispersion / (dispersion + mean)) + //Compute once
-#	lgammal(dispersion + k) + //Sum of the 2 sons
-    #		k * log(mean / (dispersion + mean)) - //k * compute once
-#		lgamma(k + 1) -	//Sum of the 2 sons
-#		lgamma(dispersion); //Compute once globaly
-
-}
-
 
 sub estimate_mean{
     my ($mode, $dispersion) = @_;
