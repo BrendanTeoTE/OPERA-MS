@@ -440,7 +440,6 @@ sub compute_confidance_interval{
 sub compute_mode{
     my ($window_distrib) = @_;
 
-    # Resolve undefineds (keep your warning behavior)
     my $nb_window = @{$window_distrib} + 0;
     my @temp = (); my $val;
     for (my $i = 0; $i < $nb_window; $i++){
@@ -452,7 +451,6 @@ sub compute_mode{
         }
     }
 
-    # Lightweight debug summary (same spirit as before)
     {
         require List::Util;
         my $n       = 0 + @temp;
@@ -463,10 +461,9 @@ sub compute_mode{
                      $n, $minv, $maxv, join(",", @preview));
     }
 
-    # If nothing to do, mirror original shape and bail early
     return [] unless @temp;
 
-    # ---- R side (fresh session per call; avoids cross-talk/races) ----
+    # fresh session per call; avoids cross-talk/races
     my $vals = join(",", @temp);
     my $span = 11;
 
@@ -495,7 +492,6 @@ RS
 
     my @tmp = split(/\s+/, $a);
 
-    # Keep your original guarding against an "[1]" prefix (unlikely now, but harmless)
     my @res;
     @res = @tmp[1..$#tmp] if @tmp;                   # drop leading empty if any
     @res = @tmp[2..$#tmp] if @tmp && $tmp[0] =~ /^\[/;
