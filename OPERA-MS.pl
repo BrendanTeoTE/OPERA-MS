@@ -839,7 +839,7 @@ sub reference_clustering{
 	    #Use the short read and add a link if support > 5, gap estimated < 500 and validated on a reference
 	    #NEED TO REMOVE LINKS SUPPORTED BY BOTH SHORT AND LONG READS
 	    
-	    run_exe($opera_ms_dependency->{"perl"}."perl ${opera_ms_dir}bin/sequence_similarity_clustering3.pl " . 
+	    run_exe($opera_ms_dependency->{"perl"}."perl ${opera_ms_dir}bin/sequence_similarity_clustering.pl " . 
 		    $inter_dir . " " .
 		    $ref_clustering_dir . " " .
 		    $opera_ms_option->{"MAPPING_DIR"} . " " .
