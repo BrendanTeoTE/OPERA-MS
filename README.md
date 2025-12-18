@@ -85,16 +85,15 @@ Sylph + Skani is set as the default method for reference clustering if no argume
 ```
 
 OPERA-MS can be run in individual steps. 
-
-Step 1: Short read assembly
-Step 2: Assembly graph creation
-Step 3: Hierarchical clustering
-Step 4: Reference clustering
-Step 5: Strain clustering and assembly
-Step 6: Gap filling
-Step 7: Generate Assembly Stats
-Step 8: Write Final Assembly
-Step 9: Polishing
+- Step 1: Short read assembly 
+- Step 2: Assembly graph creation
+- Step 3: Hierarchical clustering
+- Step 4: Reference clustering
+- Step 5: Strain clustering and assembly
+- Step 6: Gap filling
+- Step 7: Generate Assembly Stats
+- Step 8: Write Final Assembly
+- Step 9: Polishing
 
 # Usage
 
