@@ -44,6 +44,50 @@ perl OPERA-MS.pl install-db
 ```
 The database contains representative genomes for 23k bacterial species from [**GTDB**](https://gtdb.ecogenomic.org/) and requires 35Gb of free disc space. Please be aware that this version has been generated from a very old GTDB release, and GTDB now includes more than 80k bacterial species.
 
+How to run OPERA-MS with Sylph and Skani instead of Mash
+
+Step 1 - Generate database from GTDB
+
+Refer to steps 1-5 from this dedicated wiki page: https://github.com/CSB5/OPERA-MS/wiki/OPERA%E2%80%90MS%E2%80%90DB-from-GTDB-release
+
+Step 2 - Run Skani and Sylph
+
+You will need to install the latest versions of Skani and Sylph into your conda environment and run. Run this from the root directory of OPERA-MS. You can change the number of threads under -t accordingly.
+
+sylph sketch -l OPERA-MS-DB/genomes_list.txt -o OPERA-MS-DB/database.syldb -t 4
+skani sketch -l OPERA-MS-DB/genomes_list.txt -o OPERA-MS-DB/skani.database -t 4
+Step 3 - Install latest versions of Skani and Sylph into your conda environment
+
+conda install -c bioconda skani
+conda install -c bioconda sylph
+Once done, symlink from bin
+
+ln -s /envs/user/bin/skani OPERA-MS/tools_opera_ms
+ln -s /envs/user/bin/sylph OPERA-MS/tools_opera_ms
+
+*Updated arguments to run OPERA-MS*
+
+```
+    --dist-est {mash or skani}
+```
+Sylph + Skani is set as the default method for reference clustering if no argument is provided. Use --dist-est mash to run reference clustering using the original method. OPERA-MS
+
+```
+    --step {1-9}
+```
+
+OPERA-MS can be run in individual steps. 
+
+Step 1: Short read assembly
+Step 2: Assembly graph creation
+Step 3: Hierarchical clustering
+Step 4: Reference clustering
+Step 5: Strain clustering and assembly
+Step 6: Gap filling
+Step 7: Generate Assembly Stats
+Step 8: Write Final Assembly
+Step 9: Polishing
+
 # Usage
 
 ### Essential arguments
