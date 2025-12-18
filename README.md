@@ -44,7 +44,7 @@ perl OPERA-MS.pl install-db
 ```
 The database contains representative genomes for 23k bacterial species from [**GTDB**](https://gtdb.ecogenomic.org/) and requires 35Gb of free disc space. Please be aware that this version has been generated from a very old GTDB release, and GTDB now includes more than 80k bacterial species.
 
-How to run OPERA-MS with Sylph and Skani instead of Mash
+# How to run OPERA-MS with Sylph and Skani instead of Mash
 
 Step 1 - Generate database from GTDB
 
@@ -65,7 +65,7 @@ Once done, symlink from bin
 ln -s /envs/user/bin/skani OPERA-MS/tools_opera_ms
 ln -s /envs/user/bin/sylph OPERA-MS/tools_opera_ms
 
-*Updated arguments to run OPERA-MS*
+**Updated arguments to run OPERA-MS**
 
 ```
     --dist-est {mash or skani}
